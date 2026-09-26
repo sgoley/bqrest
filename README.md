@@ -54,6 +54,10 @@ go run ./cmd/bqrest tui -config ./config.example.json
 
 In the Resources view, press `r` to load tables and views from BigQuery for the selected configured dataset. Use `c` and `d` to change connection and dataset, arrows to select a resource, Space to expose/hide it, Enter to edit enabled top-level columns, and `s` to validate and atomically save the config. The BigQuery identity needs permission to list dataset tables and read their metadata. Restart the gateway to load the changed allowlist. The TUI never prints secret values or credential file paths.
 
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
 ## CI and releases
 
 Pull requests and pushes to `main` or `master` run formatting, `go vet`, race-enabled tests, a Go build, and a Docker build. Push a version tag such as `v1.2.3` to a commit on either branch to create a GitHub Release and publish `ghcr.io/sgoley/bqrest:v1.2.3`; stable tags also update `latest`.
