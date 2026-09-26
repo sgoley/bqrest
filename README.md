@@ -7,6 +7,10 @@
 <p align="center">BigQuery insights, RESTfully served.</p>
 
 <p align="center">
+  <a href="https://github.com/sgoley/bqrest/actions/workflows/ci.yml"><img src="https://github.com/sgoley/bqrest/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status"></a>
+</p>
+
+<p align="center">
   <a href="https://deploy.cloud.run?git_repo=https%3A%2F%2Fgithub.com%2Fsgoley%2Fbqrest">
     <img src="https://deploy.cloud.run/button.svg" alt="Deploy to Google Cloud Run">
   </a>
@@ -49,6 +53,10 @@ go run ./cmd/bqrest tui -config ./config.example.json
 ```
 
 In the Resources view, press `r` to load tables and views from BigQuery for the selected configured dataset. Use `c` and `d` to change connection and dataset, arrows to select a resource, Space to expose/hide it, Enter to edit enabled top-level columns, and `s` to validate and atomically save the config. The BigQuery identity needs permission to list dataset tables and read their metadata. Restart the gateway to load the changed allowlist. The TUI never prints secret values or credential file paths.
+
+## CI and releases
+
+Pull requests and pushes to `main` or `master` run formatting, `go vet`, race-enabled tests, a Go build, and a Docker build. Push a version tag such as `v1.2.3` to a commit on either branch to create a GitHub Release and publish `ghcr.io/sgoley/bqrest:v1.2.3`; stable tags also update `latest`.
 
 ## Run in Docker
 

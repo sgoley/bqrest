@@ -37,16 +37,9 @@ func main() {
 		log.Printf("configuration loaded: %d connection(s), %d caller(s)", len(cfg.Connections), len(cfg.Callers))
 	}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("{\"status\":\"ok\"}\n"))
-	})
-
 	server := &http.Server{
 		Addr:              *addr,
-		Handler:           mux,
+		Handler:           newHandler(),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -72,6 +65,16 @@ func main() {
 			_ = server.Close()
 		}
 	}
+}
+
+func newHandler() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("{\"status\":\"ok\"}\n"))
+	})
+	return mux
 }
 
 func envOr(key, fallback string) string {
