@@ -6,11 +6,21 @@
 
 <p align="center">BigQuery insights, RESTfully served.</p>
 
+<p align="center">
+  <a href="https://deploy.cloud.run?git_repo=https%3A%2F%2Fgithub.com%2Fsgoley%2Fbqrest">
+    <img src="https://deploy.cloud.run/button.svg" alt="Deploy to Google Cloud Run">
+  </a>
+</p>
+
 `bqrest` is a self-hosted, read-only REST gateway for allowlisted BigQuery insights. It is designed for on-demand, cursor-paged bulk reads that another system can cache. It does not expose arbitrary SQL or provide a scheduled sync service.
 
 ## Current status
 
 The initial bootstrap serves `GET /healthz`, validates the versioned JSON configuration, and includes a read-only TUI for connections, consumer grants, credential-reference status, and exposed resources. BigQuery reads and configuration generation are tracked in the [Linear project](https://linear.app/sgoley/project/bqrest-project-beb1a335a494/overview).
+
+## Try the Cloud Run demo
+
+Use the button above to deploy a private, health-only bootstrap to your Google Cloud project. The deploy form uses the repository's `app.json`; its demo flag lets the container start without a BigQuery config or credentials. Verify it with an authenticated request to `/healthz`. The BigQuery REST query endpoints are still under development, so this button tests deployment and service startup rather than serving table data.
 
 ## Configuration
 

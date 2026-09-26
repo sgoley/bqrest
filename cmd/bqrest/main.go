@@ -27,11 +27,15 @@ func main() {
 	addr := flag.String("listen", envOr("BQREST_LISTEN", ":8080"), "HTTP listen address")
 	flag.Parse()
 
-	cfg, err := config.Load(*configPath, os.LookupEnv)
-	if err != nil {
-		log.Fatalf("load configuration: %v", err)
+	if os.Getenv("BQREST_CLOUD_RUN_DEMO") == "true" {
+		log.Printf("Cloud Run demo mode enabled: serving health endpoint only; runtime config is not loaded")
+	} else {
+		cfg, err := config.Load(*configPath, os.LookupEnv)
+		if err != nil {
+			log.Fatalf("load configuration: %v", err)
+		}
+		log.Printf("configuration loaded: %d connection(s), %d caller(s)", len(cfg.Connections), len(cfg.Callers))
 	}
-	log.Printf("configuration loaded: %d connection(s), %d caller(s)", len(cfg.Connections), len(cfg.Callers))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {

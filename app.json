@@ -1,0 +1,17 @@
+{
+  "name": "bqrest",
+  "env": {
+    "BQREST_CLOUD_RUN_DEMO": {
+      "description": "Start the health-only demo without a BigQuery config",
+      "value": "true",
+      "required": true
+    }
+  },
+  "options": {
+    "allow-unauthenticated": false,
+    "memory": "512Mi",
+    "cpu": "1",
+    "port": 8080,
+    "max-instances": 3
+  }
+}
