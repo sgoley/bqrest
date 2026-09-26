@@ -1,0 +1,8 @@
+.git
+.env
+.env.*
+*credentials*.json
+*service-account*.json
+*.key
+*.pem
+tmp/

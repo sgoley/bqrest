@@ -1,0 +1,18 @@
+# Local configuration and credentials
+/config.json
+/config.local.json
+/config.*.local.json
+.env
+.env.*
+!.env.example
+*credentials*.json
+*service-account*.json
+*.key
+*.pem
+
+# Build and local development output
+/bqrest
+/dist/
+/tmp/
+*.log
+.DS_Store
