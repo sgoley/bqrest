@@ -88,11 +88,10 @@ func Read(path string) (Config, error) {
 // WriteAtomic writes a complete config snapshot beside the destination and
 // renames it into place so readers never observe a partial JSON file.
 func WriteAtomic(path string, cfg Config) error {
-	data, err := json.MarshalIndent(cfg, "", "  ")
+	data, err := Marshal(cfg)
 	if err != nil {
-		return fmt.Errorf("encode configuration: %w", err)
+		return err
 	}
-	data = append(data, '\n')
 
 	dir := filepath.Dir(path)
 	mode := os.FileMode(0o600)
