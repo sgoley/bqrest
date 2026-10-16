@@ -46,13 +46,17 @@ Then check health:
 curl http://localhost:8080/healthz
 ```
 
-View the configured connections, consumers, safe credential-reference status, and allowlisted tables in the TUI:
+View and edit connections, consumers, safe credential-reference status, and allowlisted tables in the TUI:
 
 ```sh
 go run ./cmd/bqrest tui -config ./config.example.json
 ```
 
-In the Resources view, press `r` to load tables and views from BigQuery for the selected configured dataset. Use `c` and `d` to change connection and dataset, arrows to select a resource, Space to expose/hide it, Enter to edit enabled top-level columns, and `s` to validate and atomically save the config. The BigQuery identity needs permission to list dataset tables and read their metadata. Restart the gateway to load the changed allowlist. The TUI never prints secret values or credential file paths.
+The TUI can also generate a config from scratch: point `-config` at a path that does not exist yet and build it up with `a`/`e`/`x` in the Connections and Consumers views. Connections and consumers are edited through guided forms; consumer grants are a checkbox list over the configured connections.
+
+In the Resources view, press `d` to open the dataset picker: `r` discovers every dataset the connection's identity can see in its project, Space configures or unconfigures one (unconfiguring drops its allowlist), and Enter browses a configured dataset. Press `r` on a configured dataset to load its tables and views, `c` to change connection, arrows to select a resource, Space to expose/hide it, and Enter to edit enabled top-level columns. The BigQuery identity needs permission to list datasets and dataset tables and read their metadata.
+
+`s` opens the review screen, which shows a redacted diff between the on-disk config and the pending draft (Tab toggles the full rendered config). `y` validates and atomically writes the file; nothing is written until you confirm. Restart the gateway to load changes. The TUI never prints secret values or credential file paths.
 
 ## License
 

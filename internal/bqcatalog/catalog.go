@@ -3,6 +3,7 @@ package bqcatalog
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"bqrest/internal/config"
 	"cloud.google.com/go/bigquery"
@@ -55,6 +56,32 @@ func List(ctx context.Context, connection config.Connection, datasetID, credenti
 		resources = append(resources, resource)
 	}
 	return resources, nil
+}
+
+// ListDatasets returns every dataset ID visible to the connection's identity
+// in its project, sorted. It backs dataset discovery in the admin TUI: only
+// IDs are returned, never credentials or data.
+func ListDatasets(ctx context.Context, connection config.Connection, credentialsFile string) ([]string, error) {
+	client, err := bigquery.NewClient(ctx, connection.ProjectID, option.WithAuthCredentialsFile(option.ServiceAccount, credentialsFile))
+	if err != nil {
+		return nil, fmt.Errorf("create BigQuery client: %w", err)
+	}
+	defer client.Close()
+
+	iter := client.Datasets(ctx)
+	var datasets []string
+	for {
+		dataset, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("list project datasets: %w", err)
+		}
+		datasets = append(datasets, dataset.DatasetID)
+	}
+	sort.Strings(datasets)
+	return datasets, nil
 }
 
 func configuredDataset(connection config.Connection, dataset string) bool {
