@@ -40,6 +40,16 @@ export BQREST_REPORTING_TOKEN='replace-with-a-long-random-token'
 go run ./cmd/bqrest -config ./config.example.json
 ```
 
+Check a configuration and its runtime secret references without starting the
+server — useful in deploy pipelines and on fresh hosts:
+
+```sh
+go run ./cmd/bqrest validate -config ./config.example.json
+```
+
+`validate` exits non-zero and names the offending setting or environment
+variable when the config or its secrets are missing or invalid.
+
 Then check health:
 
 ```sh
@@ -72,4 +82,16 @@ docker run --rm -p 8080:8080 \
   -e BQREST_ANALYTICS_CREDENTIALS_FILE=/run/secrets/bq-analytics.json \
   -e BQREST_REPORTING_TOKEN="$BQREST_REPORTING_TOKEN" \
   bqrest:local
+```
+
+To check the mounted configuration and secrets first, run the same image with
+the `validate` subcommand instead:
+
+```sh
+docker run --rm \
+  -v "$PWD/config.example.json:/etc/bqrest/config.json:ro" \
+  -v /secure/path/bq-analytics.json:/run/secrets/bq-analytics.json:ro \
+  -e BQREST_ANALYTICS_CREDENTIALS_FILE=/run/secrets/bq-analytics.json \
+  -e BQREST_REPORTING_TOKEN="$BQREST_REPORTING_TOKEN" \
+  bqrest:local validate
 ```
