@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -19,6 +21,12 @@ func main() {
 	if len(os.Args) > 1 && os.Args[1] == "tui" {
 		if err := tui.Run(os.Args[2:], os.LookupEnv); err != nil {
 			log.Fatalf("run admin TUI: %v", err)
+		}
+		return
+	}
+	if len(os.Args) > 1 && os.Args[1] == "validate" {
+		if err := runValidate(os.Args[2:], os.LookupEnv, os.Stdout); err != nil {
+			log.Fatalf("validate configuration: %v", err)
 		}
 		return
 	}
@@ -65,6 +73,23 @@ func main() {
 			_ = server.Close()
 		}
 	}
+}
+
+// runValidate checks the versioned configuration and its runtime secret
+// references without starting the HTTP server, so operators can fail fast in
+// deploy pipelines and on hosts before launching the service.
+func runValidate(args []string, lookup config.LookupEnv, out io.Writer) error {
+	flags := flag.NewFlagSet("bqrest validate", flag.ContinueOnError)
+	configPath := flags.String("config", envOr("BQREST_CONFIG", "/etc/bqrest/config.json"), "path to the bqrest JSON configuration")
+	if err := flags.Parse(args); err != nil {
+		return err
+	}
+	cfg, err := config.Load(*configPath, lookup)
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintf(out, "configuration valid: %d connection(s), %d caller(s)\n", len(cfg.Connections), len(cfg.Callers))
+	return err
 }
 
 func newHandler() http.Handler {

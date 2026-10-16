@@ -155,6 +155,11 @@ func (c Config) Validate(lookup LookupEnv) error {
 		if !info.Mode().IsRegular() {
 			return fmt.Errorf("connection %q: credentials path from %s must be a regular file", connection.Name, connection.CredentialsFileEnv)
 		}
+		credentials, err := os.Open(credentialsPath)
+		if err != nil {
+			return fmt.Errorf("connection %q: credentials file from %s is not readable: %w", connection.Name, connection.CredentialsFileEnv, err)
+		}
+		_ = credentials.Close()
 	}
 	for _, caller := range c.Callers {
 		if token, ok := lookup(caller.TokenEnv); !ok || strings.TrimSpace(token) == "" {

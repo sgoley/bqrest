@@ -123,6 +123,34 @@ func TestValidateChecksMountedCredentialAndToken(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsUnreadableCredentialsFile(t *testing.T) {
+	credentialsFile := filepath.Join(t.TempDir(), "service-account.json")
+	if err := os.WriteFile(credentialsFile, []byte("{}"), 0o000); err != nil {
+		t.Fatalf("write test credential file: %v", err)
+	}
+	lookup := func(name string) (string, bool) {
+		if name == "BQREST_CREDENTIALS_FILE" {
+			return credentialsFile, true
+		}
+		return "test-token", true
+	}
+	if err := validTestConfig().Validate(lookup); err == nil {
+		t.Fatal("Validate() accepted an unreadable credentials file")
+	}
+}
+
+// The documented example must always load as a valid configuration so new
+// operators can start the service from it.
+func TestExampleConfigValidates(t *testing.T) {
+	cfg, err := Read(filepath.Join("..", "..", "config.example.json"))
+	if err != nil {
+		t.Fatalf("Read(config.example.json) error = %v", err)
+	}
+	if err := cfg.ValidateStructure(); err != nil {
+		t.Fatalf("config.example.json failed structural validation: %v", err)
+	}
+}
+
 func TestWriteAtomicRetainsPermissionsAndConfig(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.json")
 	if err := os.WriteFile(path, []byte("old contents"), 0o600); err != nil {
